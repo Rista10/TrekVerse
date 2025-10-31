@@ -3,6 +3,7 @@ import connectDB from './db/config.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './db/Routes/authRoutes.js'; 
+import trailRoutes from './db/Routes/trailRoutes.js';
 
 const app = express();
 const port = 3000;
@@ -23,6 +24,7 @@ connectDB();
 
 
 app.use('/api/auth', authRoutes); 
+app.use("/api/trails", trailRoutes);
 
 
 app.listen(port, () => {
