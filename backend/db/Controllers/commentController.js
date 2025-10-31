@@ -45,3 +45,24 @@ export const addComment = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Get all comments for a specific trail
+export const getCommentsByTrail = async (req, res) => {
+  try {
+    const { trailId } = req.params;
+
+    // Validate trailId
+    if (!trailId) {
+      return res.status(400).json({ message: "Trail ID is required" });
+    }
+
+    const comments = await Comment.find({ trail: trailId })
+      .populate("user", "fullName email") 
+      .sort({ createdAt: -1 }); // newest first
+
+    res.status(200).json({ comments });
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
