@@ -1,16 +1,22 @@
 'use client';
-import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
-import { useState, useRef } from 'react';
-import ReactMarkdown from 'react-markdown';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import { Button } from "./_components/ui/button";
-import { Input } from "./_components/ui/input";
-import { Textarea } from "./_components/ui/textarea";
-import { Card, CardContent } from "./_components/ui/card";
+
+import { useState } from 'react';
+import { MapPin } from 'lucide-react';
+import { ItineraryForm } from './_components/ui/ItineraryForm';
+import { ItineraryDisplay } from './_components/ui/ItineraryDisplay';
+import { EmptyState } from './_components/ui/EmptyState';
+import { generatePDF } from './utils/pdfGenerator';
+
+interface FormData {
+  destination: string;
+  days: string;
+  people: string;
+  budget: string;
+  month: string;
+}
 
 export default function ItineraryPage() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     destination: '',
     days: '',
     people: '',
@@ -19,140 +25,93 @@ export default function ItineraryPage() {
   });
   const [loading, setLoading] = useState(false);
   const [itinerary, setItinerary] = useState('');
-  const pdfRef = useRef<HTMLDivElement>(null);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setItinerary('');
 
-    const res = await fetch('http://localhost:5050/api/itinerary', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch('http://localhost:5050/api/itinerary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    const data = await res.json();
-    setItinerary(data.itinerary);
-    setLoading(false);
+      const data = await res.json();
+      setItinerary(data.itinerary);
+    } catch (error) {
+      console.error('Error generating itinerary:', error);
+      // Handle error appropriately
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const downloadPDF = () => {
-  const pdf = new jsPDF('p', 'mm', 'a4');
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 15;
-  const maxWidth = pageWidth - (margin * 2);
-  let yPosition = margin;
-
-  const lines = itinerary.split('\n');
-  
-  lines.forEach((line) => {
-    if (yPosition > pageHeight - margin) {
-      pdf.addPage();
-      yPosition = margin;
-    }
-
-    if (line.startsWith('# ')) {
-      pdf.setFontSize(18);
-      pdf.setFont('helvetica', 'bold');
-      const text = line.replace('# ', '');
-      pdf.text(text, margin, yPosition);
-      yPosition += 10;
-    } else if (line.startsWith('## ')) {
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      const text = line.replace('## ', '');
-      yPosition += 5;
-      pdf.text(text, margin, yPosition);
-      yPosition += 8;
-    } else if (line.startsWith('### ')) {
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'bold');
-      const text = line.replace('### ', '');
-      yPosition += 4;
-      pdf.text(text, margin, yPosition);
-      yPosition += 7;
-    }
-    else  if (line.includes('**')) {
-    // Split the line by the ** markers
-    const splitLine = line.split('**');
-    
-    // Loop through the split parts and format accordingly
-    splitLine.forEach((part, index) => {
-      if (index % 2 === 0) { 
-        // Regular text (not inside **), normal font
-        pdf.setFontSize(10);
-        pdf.setFont('helvetica', 'normal');
-        const splitText = pdf.splitTextToSize(part, maxWidth);
-        pdf.text(splitText, margin, yPosition);
-        yPosition += splitText.length * 5 + 2;
-      } else { 
-        // Text inside ** (bold)
-        pdf.setFontSize(10);
-        pdf.setFont('helvetica', 'bold');
-        const splitText = pdf.splitTextToSize(part, maxWidth);
-        pdf.text(splitText, margin, yPosition);
-        yPosition += splitText.length * 5 + 2;
-      }
-    });
-  } 
-    else if (line.startsWith('- ')) {
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      const text = line.replace('- ', '').replace(/\*\*/g, '');
-      const splitText = pdf.splitTextToSize(text, maxWidth - 5);
-      pdf.text('•', margin, yPosition);
-      pdf.text(splitText, margin + 5, yPosition);
-      yPosition += splitText.length * 5 + 2;
-    } else if (line.trim() !== '') {
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      const splitText = pdf.splitTextToSize(line, maxWidth);
-      pdf.text(splitText, margin, yPosition);
-      yPosition += splitText.length * 5 + 2;
-    } else {
-      yPosition += 3;
-    }
-  });
-
-  pdf.save(`${formData.destination || 'Trek'}-Itinerary.pdf`);
-};
+  const handleDownloadPDF = () => {
+    generatePDF(itinerary, formData.destination);
+  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-teal-50">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardContent className="p-6">
-          <h1 className="text-2xl font-bold mb-4 text-center">TrekVerse Itinerary Planner</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4">
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #888;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+      `}</style>
+      
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full mb-4 shadow-lg">
+            <MapPin size={36} className="text-white" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+            TrekVerse Itinerary Planner
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Create your perfect trek itinerary in seconds. Powered by AI to give you the best adventure experience.
+          </p>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input placeholder="Destination (e.g., Annapurna Base Camp)" name="destination" value={formData.destination} onChange={handleChange} required />
-            <Input placeholder="Number of Days (e.g., 7)" name="days" value={formData.days} onChange={handleChange} required />
-            <Input placeholder="Number of People" name="people" value={formData.people} onChange={handleChange} required />
-            <Input placeholder="Budget Range (e.g., $300-$500)" name="budget" value={formData.budget} onChange={handleChange} required />
-            <Input placeholder="Preferred Month (e.g., October)" name="month" value={formData.month} onChange={handleChange} required />
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
+          {/* Form Section */}
+          <ItineraryForm 
+            formData={formData}
+            loading={loading}
+            hasItinerary={!!itinerary}
+            onFormChange={handleChange}
+            onSubmit={handleSubmit}
+          />
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Generating...' : 'Get My Itinerary'}
-            </Button>
-          </form>
-
-          {itinerary && (
-            <div className="mt-6 bg-white p-4 rounded-lg shadow-lg border-2 border-gray-300">
-              <div ref={pdfRef} className="prose max-w-none text-gray-900">
-                <ReactMarkdown>{itinerary}</ReactMarkdown>
-              </div>
-              <Button onClick={downloadPDF} className="mt-4 w-full bg-green-600 hover:bg-green-700">
-                Download as PDF
-              </Button>
+          {/* Itinerary Display Section */}
+          {itinerary ? (
+            <div className="lg:sticky lg:top-6">
+              <ItineraryDisplay 
+                itinerary={itinerary} 
+                onDownload={handleDownloadPDF}
+              />
             </div>
+          ) : (
+            !loading && <EmptyState />
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
