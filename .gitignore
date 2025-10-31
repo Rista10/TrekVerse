@@ -41,4 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 # ignore frames in public
-/public/frames/*
+public/frames/
