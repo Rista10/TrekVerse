@@ -19,6 +19,9 @@ export default function HeroSection() {
   useEffect(() => {
     if (!textRef.current) return;
 
+    // Ensure GSAP initial values match server-rendered HTML to avoid hydration
+    // mismatches. The element has inline styles set below so the server HTML
+    // and client initial DOM match before GSAP runs.
     gsap.set(textRef.current, { opacity: -1, y: 50 });
 
     gsap.to(textRef.current, {
@@ -39,9 +42,15 @@ export default function HeroSection() {
 
   return (
     <section className="fixed top-0 left-0 w-full h-screen flex items-center justify-center pointer-events-none z-10">
-      <div ref={textRef} className="text-center px-4">
+      <div
+        ref={textRef}
+        // Match GSAP's initial animation state on the server to avoid
+        // hydration mismatch: opacity 0, translated down 50px.
+        className="text-center px-4"
+        style={{ opacity: 0, transform: 'translateY(50px)' }}
+      >
         <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4 tracking-tight">
-          Welcome to Trek Verse
+          Welcome toTrek Verse
         </h1>
 
         <p className="text-lg md:text-xl text-gray-900 font-light leading-relaxed mb-12 max-w-3xl mx-auto">
