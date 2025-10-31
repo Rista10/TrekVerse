@@ -47,7 +47,7 @@ export default function ScrollAnimation() {
       scrollTrigger: {
         scrub: 1,
         start: 0,
-        end: "7000", 
+        end: "7500", 
       },
       onUpdate: render,
     });
