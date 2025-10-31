@@ -7,8 +7,8 @@ import trailRoutes from './db/Routes/trailRoutes.js';
 import commentRoutes from './db/Routes/commentRoutes.js';
 
 const app = express();
-const port = 3000;
-const allowedOrigin = 'http://localhost:3001';
+const port = 5000;
+const allowedOrigin = 'http://localhost:3000';
 
 
 app.use(

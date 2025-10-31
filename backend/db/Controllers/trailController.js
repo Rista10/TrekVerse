@@ -44,3 +44,39 @@ export const addTrail = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Add this to your trail controller file
+
+export const getAllTrails = async (req, res) => {
+  try {
+    const trails = await Trail.find().sort({ createdAt: -1 }); // newest first
+    
+    res.status(200).json({ 
+      message: "Trails fetched successfully", 
+      trails 
+    });
+  } catch (error) {
+    console.error("Error fetching trails:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Optional: Get a single trail by ID
+export const getTrailById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const trail = await Trail.findById(id);
+    
+    if (!trail) {
+      return res.status(404).json({ message: "Trail not found" });
+    }
+    
+    res.status(200).json({ 
+      message: "Trail fetched successfully", 
+      trail 
+    });
+  } catch (error) {
+    console.error("Error fetching trail:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
