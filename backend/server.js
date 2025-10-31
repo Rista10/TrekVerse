@@ -8,7 +8,7 @@ import commentRoutes from './db/Routes/commentRoutes.js';
 
 const app = express();
 const port = 3000;
-const allowedOrigin = 'http://localhost:3000';
+const allowedOrigin = 'http://localhost:3001';
 
 
 app.use(
