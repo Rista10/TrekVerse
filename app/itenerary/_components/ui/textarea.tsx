@@ -1,5 +1,8 @@
 import * as React from "react";
-import { cn } from "../../lib/utils";
+
+function cn(...inputs: Array<string | boolean | null | undefined>) {
+  return inputs.filter(Boolean).join(" ");
+}
 
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}

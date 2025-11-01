@@ -43,7 +43,7 @@ export const generatePDF = (itinerary: string, destination: string) => {
     } else if (line.includes('**')) {
       // Handle bold text inline
       const parts = line.split('**');
-      let xPosition = margin;
+      const xPosition = margin;
       
       parts.forEach((part, index) => {
         if (part.trim()) {
