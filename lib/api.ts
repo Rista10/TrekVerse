@@ -1,6 +1,6 @@
 import { TrailsResponse, TrailResponse } from "@/types/trail";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050/api";
 
 export const trailApi = {
   getAllTrails: async (): Promise<TrailsResponse> => {

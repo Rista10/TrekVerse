@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface FormData {
   fullName: string;
@@ -31,6 +32,7 @@ const AuthPages = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
     phoneNo: '',
@@ -90,7 +92,7 @@ const AuthPages = () => {
     if (!validateForm()) return;
 
     try {
-      const endpoint = isLogin ? 'http://localhost:3000/api/auth/login' : 'http://localhost:3000/api/auth/signup';
+      const endpoint = isLogin ? 'http://localhost:5050/api/auth/login' : 'http://localhost:5050/api/auth/signup';
       const body = isLogin 
         ? { email: formData.email, password: formData.password, remember: rememberMe }
         : { 
@@ -112,6 +114,7 @@ const AuthPages = () => {
       
       if (response.ok) {
         setMessage({ type: 'success', text: data.message });
+        router.push('/explore');
         if (!isLogin) {
           setTimeout(() => setIsLogin(true), 2000);
         }
