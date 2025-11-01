@@ -19,8 +19,15 @@ export default function ExplorePage() {
     const fetchTrails = async () => {
       try {
         setLoading(true);
-        const response = await trailApi.getAllTrails();
-        setTrails(response.trails);
+      const response = await trailApi.getAllTrails();
+
+      // Filter trails
+      const selectedTrails = response.trails.filter((trail) =>
+        ["Everest Base Camp Trek", "Langtang Valley Trail", "Annapurna Base Camp Trek"]
+          .includes(trail.name)
+      );
+
+      setTrails(selectedTrails);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch trails");
         console.error("Error fetching trails:", err);
