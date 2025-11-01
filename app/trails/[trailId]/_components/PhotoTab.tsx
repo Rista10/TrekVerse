@@ -15,8 +15,6 @@ export const PhotosTab: React.FC<PhotosTabProps> = ({ photos }) => {
   return (
     <Card className="bg-white backdrop-blur-sm">
       <CardContent className="p-6">
-        <h2 className="text-xl font-semibold">My Photo Gallery</h2>
-        
         {/* Carousel Section */}
         <div className="">
           <PhotoCarousel />

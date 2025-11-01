@@ -128,7 +128,7 @@ export const LocationHeader: React.FC<LocationHeaderProps> = ({
         className="relative opacity-0 translate-y-4 transition-all duration-500 ease-out max-w-3/4 pb-4 "
         style={{ transitionDelay: `${index * 150}ms` }}
       >
- 
+        <div className="absolute p-1.5 -translate-x-1/2 h-10 bg-muted/50 rounded-lg" >{index+1}</div> 
         {/* Checkpoint content */}
         <div className="bg-secondary/40 rounded-xl p-4 hover:bg-secondary/60 transition-all">
           <div className="flex items-center justify-between">

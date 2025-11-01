@@ -51,7 +51,7 @@ export default function HeroSection() {
         style={{ opacity: 0, transform: 'translateY(50px)' }}
       >
         <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4 tracking-tight">
-          Welcome toTrek Verse
+          Welcome to TrekVerse
         </h1>
 
         <p className="text-lg md:text-xl text-gray-900 font-light leading-relaxed mb-12 max-w-3xl mx-auto">

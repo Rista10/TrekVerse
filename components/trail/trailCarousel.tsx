@@ -140,7 +140,7 @@ const TrailCarousel = ({ trail }: TrailCarouselProps) => {
         </p>
 
         <button className="mt-4 w-full bg-background/50 backdrop-blur-md border-muted hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
-        onClick={() => window.location.href = `/trails/${trail._id}`}
+        onClick={() => window.location.href = `/trails/${trail.name}`}
         >
           View Details
         </button>

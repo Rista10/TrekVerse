@@ -21,6 +21,10 @@ const Popup = dynamic(
     () => import("react-leaflet").then((mod) => mod.Popup),
     { ssr: false }
 );
+const Polyline = dynamic(
+    () => import("react-leaflet").then((mod) => mod.Polyline),
+    { ssr: false }
+);
 
 interface Checkpoint {
     name: string;
@@ -38,6 +42,23 @@ interface TrekMapProps {
 export default function TrekMap({ latitude, longitude, checkpoints }: TrekMapProps) {
     const position: LatLngExpression = [latitude || 51.505, longitude || -0.09];
 
+    // Calculate bounds to fit all markers if checkpoints exist
+    let mapCenter = position;
+    let mapZoom = 13;
+
+    if (checkpoints && checkpoints.length > 0) {
+        const allPoints = [
+            [latitude || 51.505, longitude || -0.09],
+            ...checkpoints.map(cp => [cp.latitude, cp.longitude])
+        ];
+        const lats = allPoints.map(p => p[0]);
+        const lngs = allPoints.map(p => p[1]);
+        const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+        const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+        mapCenter = [centerLat, centerLng];
+        mapZoom = 11; // Zoom out to fit all markers
+    }
+
     const defaultIcon = L.icon({
         iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
         shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
@@ -51,29 +72,36 @@ export default function TrekMap({ latitude, longitude, checkpoints }: TrekMapPro
             iconAnchor: [12, 24],
         });
 
-    // Pre-create markers array
-    const markers = checkpoints?.map((cp, index) => (
-    <Marker
-        key={index} // React needs a unique key per marker
-        position={[cp.latitude, cp.longitude]}
-        icon={createNumberedIcon(index + 1)} // create a new icon per marker
-    >
-        <Popup>
-            <strong>{cp.name}</strong>
-            <br />
-            {cp.description}
-        </Popup>
-    </Marker>
-)) || [];
+    // Pre-create markers array with unique keys based on checkpoint name
+    const markers = checkpoints && checkpoints.length > 0
+        ? checkpoints.map((cp, index) => (
+            <Marker
+                key={`checkpoint-${cp.name}-${index}`} // Unique key combining name and index
+                position={[cp.latitude, cp.longitude]}
+                icon={createNumberedIcon(index + 1)}
+            >
+                <Popup>
+                    <strong>{cp.name}</strong>
+                    <br />
+                    {cp.description}
+                </Popup>
+            </Marker>
+        ))
+        : [];
 
+    console.log("Checkpoints received:", checkpoints);
+    console.log("Number of markers:", markers.length);
 
-    console.log("Markers:", markers);
+    // Build polyline coordinates connecting checkpoints in order
+    const polylineCoordinates: LatLngExpression[] = checkpoints && checkpoints.length > 0
+        ? checkpoints.map(cp => [cp.latitude, cp.longitude] as LatLngExpression)
+        : [];
 
     return (
         <div className="w-full h-[60vh] rounded-2xl overflow-hidden shadow-lg">
             <MapContainer
-                center={position}
-                zoom={13}
+                center={mapCenter as LatLngExpression}
+                zoom={mapZoom}
                 scrollWheelZoom={false}
                 style={{ height: "100%", width: "100%" }}
             >
@@ -82,12 +110,22 @@ export default function TrekMap({ latitude, longitude, checkpoints }: TrekMapPro
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 />
 
-                {/* Main location marker */}
+                {/* Polyline connecting all checkpoints */}
+                {polylineCoordinates.length > 1 && (
+                    <Polyline
+                        positions={polylineCoordinates}
+                        color="#e74c3c"
+                        weight={3}
+                        opacity={0.8}
+                    />
+                )}
+
+                {/* Main location marker
                 <Marker position={position} icon={defaultIcon}>
                     <Popup>
                         Location: {latitude}, {longitude}
                     </Popup>
-                </Marker>
+                </Marker> */}
 
                 {markers}
             </MapContainer>

@@ -32,7 +32,7 @@ export const trailData = [
     ],
   },
   {
-    name: "Annapurna Base Camp Heli Trek",
+    name: "Annapurna Base Camp Trek",
     latitude: 28.5306,
     longitude: 83.8780,
     description:
@@ -70,6 +70,78 @@ export const trailData = [
       },
     ],
   },
+  {
+  name: "Langtang Valley Trail",
+  latitude: 28.18,
+  longitude: 85.54,
+  description:
+    "Beautiful valley trek with stunning mountain views, rich Tamang culture, and pristine alpine landscapes. A moderate trek that leaves you refreshed and connected with nature.",
+  duration: "7 days",
+  difficulty: "Moderate",
+  checkpoints: [
+    {
+      name: "Syabrubesi (start)",
+      latitude: 28.02,
+      longitude: 85.35,
+      description:
+        "Starting point of the Langtang Valley trek. Trekkers register permits here before heading into the valley.",
+    },
+    {
+      name: "Langtang Village (checkpoint)",
+      latitude: 28.18,
+      longitude: 85.54,
+      description:
+        "Scenic village surrounded by towering peaks. Rebuilt after 2015 earthquake, it gives a glimpse of traditional Tamang life.",
+    },
+    {
+      name: "Kyanjin Gompa (end)",
+      latitude: 28.22,
+      longitude: 85.56,
+      description:
+        "Famous monastery and final destination. Panoramic views of Langtang Lirung and nearby glaciers.",
+    },
+  ],
+},
+
+{
+  name: "Everest Base Camp Trek",
+  latitude: 27.9881,
+  longitude: 86.9250,
+  description:
+    "Iconic high-altitude trek to the base of the world’s highest peak. Traverse Sherpa villages, Buddhist monasteries, and rugged landscapes, experiencing the majesty of the Himalayas up close.",
+  duration: "15 days",
+  difficulty: "Difficult",
+  checkpoints: [
+    {
+      name: "Lukla (start)",
+      latitude: 27.6869,
+      longitude: 86.7290,
+      description:
+        "Gateway to the Everest region. Flights from Kathmandu land here, beginning the adventure.",
+    },
+    {
+      name: "Namche Bazaar (checkpoint)",
+      latitude: 27.8070,
+      longitude: 86.7140,
+      description:
+        "Bustling Sherpa town and acclimatization stop. Offers spectacular views of Everest and Ama Dablam.",
+    },
+    {
+      name: "Tengboche (checkpoint)",
+      latitude: 27.8678,
+      longitude: 86.7497,
+      description:
+        "Home to the famous Tengboche Monastery. Surrounded by panoramic Himalayan views.",
+    },
+    {
+      name: "Everest Base Camp (end)",
+      latitude: 28.0010,
+      longitude: 86.8528,
+      description:
+        "At 5,364 m, the iconic base of Mount Everest. Witness massive glaciers, rugged terrain, and the awe-inspiring Khumbu Icefall.",
+    },
+  ],
+},
   {
     name: "Banthati Mohare Trail I",
     latitude: 28.3717,

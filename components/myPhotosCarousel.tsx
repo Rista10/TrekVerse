@@ -2,48 +2,63 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 
 const PhotoCarousel = () => {
-  // Sample photo URLs - replace with your actual photos
+  // Trek path images with labels
   const photoSets = [
-    [
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop',
-    ],
-    [
-      'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=400&h=300&fit=crop',
-    ],
-    [
-      'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1445991842772-097fea258e7b?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&h=300&fit=crop',
-    ],
-    [
-      'https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=400&h=300&fit=crop',
-    ],
-    [
-      'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1516996087931-5ae405802f9f?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop',
-    ],
+    {
+      label: "Stop 1",
+      photos: [
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+      ]
+    },
+    {
+      label: "Stop 2",
+      photos: [
+        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop',
+      ]
+    },
+    {
+      label: "Stop 3",
+      photos: [
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+      ]
+    },
+    {
+      label: "Stop 4",
+      photos: [
+        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&h=400&fit=crop',
+      ]
+    },
+    {
+      label: "Destination",
+      photos: [
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+      ]
+    },
   ];
 
   const [currentIndexes, setCurrentIndexes] = useState([0, 0, 0, 0, 0]);
 
   useEffect(() => {
-    const intervals = photoSets.map((photos, setIndex) => {
+    const intervals = photoSets.map((photoSet, setIndex) => {
       return setInterval(() => {
         setCurrentIndexes(prev => {
           const next = [...prev];
-          next[setIndex] = (next[setIndex] + 1) % photos.length;
+          next[setIndex] = (next[setIndex] + 1) % photoSet.photos.length;
           return next;
         });
       }, 3000 + setIndex * 200);
@@ -53,48 +68,73 @@ const PhotoCarousel = () => {
   }, []);
 
   return (
-    <div className="min-h-screen  p-8 flex items-center justify-center">
-      <div className="w-full max-w-2xl space-y-6">
-        {photoSets.map((photos, setIndex) => (
-          <div 
-            key={setIndex} 
-            className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20  items-center justify-center"
+    <div className="min-h-screen bg-white p-8 flex items-center justify-center">
+      <div className="w-full max-w-4xl space-y-8">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-slate-900 mb-2">Trek Journey</h2>
+          <p className="text-slate-600">Explore the breathtaking views along the trail</p>
+        </div>
+
+        {photoSets.map((photoSet, setIndex) => (
+          <div
+            key={setIndex}
+            className="group bg-linear-to-br from-blue-50 to-slate-100 backdrop-blur-md rounded-2xl p-8 border border-blue-200 hover:border-blue-400 transition-all duration-300 shadow-lg hover:shadow-blue-200"
           >
-            <p>This is a P tag</p>
-            <div className="relative w-120 h-70 overflow-hidden rounded-lg">
-              {photos.map((photo, photoIndex) => (
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-linear-to-r from-blue-400 to-purple-600 flex items-center justify-center">
+                <span className="text-white font-bold text-lg">{setIndex + 1}</span>
+              </div>
+              <h3 className="text-2xl font-semibold text-slate-800">{photoSet.label}</h3>
+            </div>
+
+            <div className="relative w-full h-96 overflow-hidden rounded-xl border border-blue-200 shadow-lg">
+              {photoSet.photos.map((photo: string, photoIndex: number) => (
                 <Card
                   key={`${setIndex}-${photoIndex}`}
-                  className={`absolute inset-0 overflow-hidden shadow-2xl border-2 border-white/40 transition-all duration-700 ${
-                    photoIndex === currentIndexes[setIndex]
-                      ? 'translate-x-0 opacity-100 z-10'
-                      : photoIndex === (currentIndexes[setIndex] + photos.length - 1) % photos.length
+                  className={`absolute inset-0 overflow-hidden shadow-2xl border-0 transition-all duration-700 ${photoIndex === currentIndexes[setIndex]
+                    ? 'translate-x-0 opacity-100 z-10'
+                    : photoIndex === (currentIndexes[setIndex] + photoSet.photos.length - 1) % photoSet.photos.length
                       ? '-translate-x-full opacity-0 z-0'
                       : 'translate-x-full opacity-0 z-0'
-                  }`}
+                    }`}
                 >
                   <img
                     src={photo}
-                    alt={`Photo ${photoIndex + 1}`}
+                    alt={`${photoSet.label} - Photo ${photoIndex + 1}`}
                     className="w-full h-full object-cover"
                   />
                 </Card>
               ))}
-              
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 z-20">
-                <div className="flex gap-1.5 justify-center">
-                  {photos.map((_, idx) => (
+
+              <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 via-black/40 to-transparent p-6 z-20">
+                <div className="flex gap-2 justify-center">
+                  {photoSet.photos.map((_: string, idx: number) => (
                     <div
                       key={idx}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        idx === currentIndexes[setIndex]
-                          ? 'w-8 bg-white'
-                          : 'w-1.5 bg-white/50'
-                      }`}
+                      className={`h-2 rounded-full transition-all duration-300 ${idx === currentIndexes[setIndex]
+                        ? 'w-8 bg-blue-400'
+                        : 'w-2 bg-white/40 hover:bg-white/60'
+                        }`}
                     />
                   ))}
                 </div>
               </div>
+
+              {/* Navigation arrows */}
+              <div className="absolute top-1/2 left-4 transform -translate-y-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition">
+                  ←
+                </button>
+              </div>
+              <div className="absolute top-1/2 right-4 transform -translate-y-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition">
+                  →
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-4 text-center text-sm text-slate-600">
+              Photo {currentIndexes[setIndex] + 1} of {photoSet.photos.length}
             </div>
           </div>
         ))}
