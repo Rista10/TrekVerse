@@ -6,6 +6,7 @@ import { ItineraryForm } from './_components/ui/ItineraryForm';
 import { ItineraryDisplay } from './_components/ui/ItineraryDisplay';
 import { EmptyState } from './_components/ui/EmptyState';
 import { generatePDF } from './utils/pdfGenerator';
+import Image from 'next/image';
 
 interface FormData {
   destination: string;
@@ -46,7 +47,6 @@ export default function ItineraryPage() {
       setItinerary(data.itinerary);
     } catch (error) {
       console.error('Error generating itinerary:', error);
-      // Handle error appropriately
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,20 @@ export default function ItineraryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4">
+    <div className="relative min-h-screen py-12 px-4">
+      {/* Background Image - stays behind */}
+      <div className="fixed inset-0 z-0">
+        <Image
+          src="/frames/frame_0192.png"
+          alt="Mountain background"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Optional: Add overlay for better text readability */}
+        <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+      </div>
+
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
@@ -75,7 +88,8 @@ export default function ItineraryPage() {
         }
       `}</style>
       
-      <div className="max-w-7xl mx-auto">
+      {/* Content - appears above background */}
+      <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full mb-4 shadow-lg">

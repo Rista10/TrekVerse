@@ -3,6 +3,9 @@ import React, { useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useRouter } from 'next/navigation';
+
+
 
 interface Checkpoint {
   name: string;
@@ -48,6 +51,11 @@ export const LocationHeader: React.FC<LocationHeaderProps> = ({
     if (lower.includes('challenging') || lower.includes('hard')) return "bg-red-500";
     return "bg-blue-500";
   };
+
+  const router = useRouter();
+  const handleItenary = () => {
+    router.push('/itenerary');
+  }
 
   return (
     <Card className="mb-4 h-full rounded-b-none min-h-screen relative overflow-hidden">
@@ -152,6 +160,9 @@ export const LocationHeader: React.FC<LocationHeaderProps> = ({
     ))}
 
               </div>
+              <Button className='ml-120 mt-3' onClick={handleItenary}>
+                Build an Itenerary
+              </Button>
             </div>
           )}
         </div>
