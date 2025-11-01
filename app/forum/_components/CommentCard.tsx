@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Comment } from '../types/comment';
 import { Button } from './Button';
+import { UserProfileModal } from './UserProfileModal';
 
 interface CommentCardProps {
   comment: Comment;
@@ -30,6 +31,10 @@ export const CommentCard: React.FC<CommentCardProps> = ({
   const [showReplies, setShowReplies] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [showReplyInput, setShowReplyInput] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileUser, setProfileUser] = useState<{ fullName: string; email: string; phoneNo: string } | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [profileError, setProfileError] = useState<string | undefined>(undefined);
 
   const isLiked = comment.likes?.includes(currentUserId) || false;
 
@@ -88,11 +93,44 @@ export const CommentCard: React.FC<CommentCardProps> = ({
     }
   };
 
+  const handleProfileClick = async (email?: string) => {
+    const userEmail = email || comment.userId?.email;
+    if (!userEmail) return;
+    
+    setShowProfileModal(true);
+    setLoadingProfile(true);
+    setProfileUser(null);
+    setProfileError(undefined);
+
+    try {
+      const encodedEmail = encodeURIComponent(userEmail);
+      const response = await fetch(`http://localhost:5050/api/auth/user/${encodedEmail}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setProfileUser(data.user);
+        setProfileError(undefined);
+      } else {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to fetch user profile' }));
+        console.error('Failed to fetch user profile:', response.status, errorData);
+        setProfileError(errorData.message || `Error: ${response.status} ${response.statusText}`);
+      }
+    } catch (error: any) {
+      console.error('Error fetching user profile:', error);
+      setProfileError(error.message || 'Network error. Please check your connection.');
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 p-6 hover:shadow-lg transition-all duration-200">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
+        <div 
+          className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => handleProfileClick()}
+        >
           <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
             {(comment.userId?.fullName?.charAt(0) || 'U').toUpperCase()}
           </div>
@@ -189,11 +227,23 @@ export const CommentCard: React.FC<CommentCardProps> = ({
         <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
           {comment.replies?.map((reply) => (
             <div key={reply._id} className="flex gap-3 pl-4 border-l-2 border-blue-200">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+              <div 
+                className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleProfileClick(reply.userId?.email);
+                }}
+              >
                 {(reply.userId?.fullName?.charAt(0) || 'U').toUpperCase()}
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
+                <div 
+                  className="flex items-center gap-2 mb-1 cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleProfileClick(reply.userId?.email);
+                  }}
+                >
                   <span className="font-semibold text-sm text-gray-900">
                     {reply.userId?.fullName || 'Unknown User'}
                   </span>
@@ -207,6 +257,19 @@ export const CommentCard: React.FC<CommentCardProps> = ({
           ))}
         </div>
       )}
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={showProfileModal}
+        onClose={() => {
+          setShowProfileModal(false);
+          setProfileUser(null);
+          setProfileError(undefined);
+        }}
+        user={profileUser}
+        loading={loadingProfile}
+        error={profileError}
+      />
     </div>
   );
 };

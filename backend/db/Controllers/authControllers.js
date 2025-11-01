@@ -141,7 +141,10 @@ export const logoutUser = async (req, res) => {
 };
 
 export const getUserByEmail = async (req, res) => {
-  const { email } = req.params; // assuming email is passed as a route param
+  let { email } = req.params; // assuming email is passed as a route param
+
+  // Decode URL-encoded email
+  email = decodeURIComponent(email);
 
   if (!email) {
     return res.status(400).json({ message: "Email is required" });
