@@ -89,7 +89,7 @@ const AuthPages = () => {
     if (!validateForm()) return;
 
     try {
-      const endpoint = isLogin ? 'http://localhost:3000/api/auth/login' : 'http://localhost:3000/api/auth/signup';
+      const endpoint = isLogin ? 'http://localhost:5050/api/auth/login' : 'http://localhost:5050/api/auth/signup';
       const body = isLogin 
         ? { email: formData.email, password: formData.password, remember: rememberMe }
         : { 
