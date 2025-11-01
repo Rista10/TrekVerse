@@ -29,21 +29,6 @@ export const TrailDetails: React.FC<TrailDetailsProps> = ({
     address
 }) => {
     const [activeTab, setActiveTab] = useState('about');
-    const reviews = [
-        {
-            id: '1',
-            author: 'Sarah Johnson',
-            rating: 5,
-            date: 'Oct 2024',
-            text: 'Absolutely stunning place! The architecture is breathtaking and the peaceful atmosphere is perfect for meditation. A must-visit in Kathmandu.'
-        },
-        {
-            id: '2',
-            author: 'Raj Patel',
-            rating: 4,
-            date: 'Sep 2024',
-            text: 'Beautiful temple complex with amazing views of the city. Can get crowded during festivals, but still worth the visit. Bring comfortable shoes for the stairs!'
-        }]
 
     const photos: Photo[] = [
         { id: '1', url: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=800&h=600&fit=crop' },
@@ -97,7 +82,7 @@ export const TrailDetails: React.FC<TrailDetailsProps> = ({
 
                     <TabsContent value="reviews" className="mt-6 bg-transparent backdrop-blur-sm p-6">
                         <ReviewsTab
-                            reviews={reviews}
+                            trailId={name}
                             rating={rating}
                             reviewCount={reviewCount}
                         />

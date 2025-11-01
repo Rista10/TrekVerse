@@ -1,5 +1,7 @@
 import cloudinary from "../../Config/cloudinary.js";
 import Comment from "../Models/Comment.js";
+import Trail from "../Models/Trail.js";
+import mongoose from "mongoose";
 
 const uploadToCloudinary = (fileBuffer) => {
   return new Promise((resolve, reject) => {
@@ -49,9 +51,9 @@ export const createComment = async (req, res) => {
       return res.status(401).json({ message: "Authentication required" });
     }
 
-    const { content, category } = req.body;
+    const { content, category, trailId } = req.body;
 
-    console.log('Content:', content, 'Category:', category);
+    console.log('Content:', content, 'Category:', category, 'TrailId:', trailId);
 
     if (!content || !content.trim()) {
       return res.status(400).json({ message: "Content is required" });
@@ -64,6 +66,39 @@ export const createComment = async (req, res) => {
       );
     }
 
+    // Handle trailId: if it's a string (trail name), find the Trail and get its ObjectId
+    let trailObjectId = null;
+    if (trailId) {
+      // Check if trailId is a valid MongoDB ObjectId
+      if (mongoose.Types.ObjectId.isValid(trailId)) {
+        trailObjectId = trailId;
+      } else {
+        // It's likely a trail name, find the Trail by name
+        const trail = await Trail.findOne({ name: trailId });
+        if (trail) {
+          trailObjectId = trail._id;
+        } else {
+          // Trail not found in DB, store as string name (we'll need to update schema)
+          // For now, let's create or find the trail
+          // Actually, since trailId in Comment schema expects ObjectId, we should create the trail if it doesn't exist
+          // OR we need to update the schema to accept string. Let's try to find/create the trail.
+          console.log(`Trail "${trailId}" not found in database. Creating or using name as identifier.`);
+          // For now, we'll skip trailId if trail doesn't exist, or store the trail name
+          // But since schema expects ObjectId, we need to either:
+          // 1. Create the trail if it doesn't exist
+          // 2. Update schema to accept string
+          // Let's go with option 1 - create trail if it doesn't exist
+          const newTrail = await Trail.create({
+            name: trailId,
+            location: 'Unknown',
+            description: 'Trail created automatically from comment',
+            difficulty: 'Moderate'
+          });
+          trailObjectId = newTrail._id;
+        }
+      }
+    }
+
     const comment = new Comment({
       userId,
       content: content.trim(),
@@ -71,6 +106,7 @@ export const createComment = async (req, res) => {
       images: uploadedImages,
       likes: [],
       replies: [],
+      ...(trailObjectId && { trailId: trailObjectId }), // Include trailId only if provided
     });
 
     await comment.save();
@@ -200,19 +236,36 @@ export const addComment = async (req, res) => {
 // Get all comments for a specific trail
 export const getCommentsByTrail = async (req, res) => {
   try {
-    const { trailId } = req.params;
+    let { trailId } = req.params;
+    
+    // Decode URL-encoded trail name
+    trailId = decodeURIComponent(trailId);
 
     // Validate trailId
     if (!trailId) {
       return res.status(400).json({ message: "Trail ID is required" });
     }
 
-    const comments = await Comment.find({ trailId: trailId })
+    // Check if trailId is a valid MongoDB ObjectId
+    let trailObjectId = trailId;
+    if (!mongoose.Types.ObjectId.isValid(trailId)) {
+      // It's likely a trail name, find the Trail by name
+      const trail = await Trail.findOne({ name: trailId });
+      if (trail) {
+        trailObjectId = trail._id;
+      } else {
+        // Trail not found - return empty array instead of error
+        return res.status(200).json([]);
+      }
+    }
+
+    // Query comments using the trail ObjectId
+    const comments = await Comment.find({ trailId: trailObjectId })
       .populate("userId", "fullName email")
       .populate("replies.userId", "fullName email")
       .sort({ createdAt: -1 }); // newest first
 
-    res.status(200).json({ comments });
+    res.status(200).json(comments);
   } catch (error) {
     console.error("Error fetching comments:", error);
     res.status(500).json({ message: "Internal server error" });
