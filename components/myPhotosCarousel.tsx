@@ -37,32 +37,15 @@ const PhotoCarousel = () => {
   ];
 
   const [currentIndexes, setCurrentIndexes] = useState([0, 0, 0, 0, 0]);
-  const [isTransitioning, setIsTransitioning] = useState([false, false, false, false, false]);
 
   useEffect(() => {
-    const intervals = photoSets.map((_, setIndex) => {
+    const intervals = photoSets.map((photos, setIndex) => {
       return setInterval(() => {
-        setIsTransitioning(prev => {
+        setCurrentIndexes(prev => {
           const next = [...prev];
-          next[setIndex] = true;
+          next[setIndex] = (next[setIndex] + 1) % photos.length;
           return next;
         });
-
-        setTimeout(() => {
-          setCurrentIndexes(prev => {
-            const next = [...prev];
-            next[setIndex] = (next[setIndex] + 1) % photoSets[setIndex].length;
-            return next;
-          });
-
-          setTimeout(() => {
-            setIsTransitioning(prev => {
-              const next = [...prev];
-              next[setIndex] = false;
-              return next;
-            });
-          }, 50);
-        }, 600);
       }, 3000 + setIndex * 200);
     });
 
@@ -72,43 +55,46 @@ const PhotoCarousel = () => {
   return (
     <div className="min-h-screen  p-8 flex items-center justify-center">
       <div className="w-full max-w-2xl space-y-6">
-        <h1 className="text-3xl font-bold text-white text-center mb-8">
-          Photo Carousels
-        </h1>
-        
         {photoSets.map((photos, setIndex) => (
           <div 
             key={setIndex} 
-            className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 flex items-center justify-center"
+            className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20  items-center justify-center"
           >
-            <div className="relative w-80 h-52 overflow-hidden rounded-lg">
-              <Card 
-                className={`absolute inset-0 overflow-hidden shadow-2xl border-2 border-white/40 transition-all duration-700 ${
-                  isTransitioning[setIndex] 
-                    ? 'translate-x-full opacity-0' 
-                    : 'translate-x-0 opacity-100'
-                }`}
-              >
-                <img
-                  src={photos[currentIndexes[setIndex]]}
-                  alt={`Photo ${currentIndexes[setIndex] + 1}`}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                  <div className="flex gap-1.5 justify-center">
-                    {photos.map((_, idx) => (
-                      <div
-                        key={idx}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                          idx === currentIndexes[setIndex]
-                            ? 'w-8 bg-white'
-                            : 'w-1.5 bg-white/50'
-                        }`}
-                      />
-                    ))}
-                  </div>
+            <p>This is a P tag</p>
+            <div className="relative w-120 h-70 overflow-hidden rounded-lg">
+              {photos.map((photo, photoIndex) => (
+                <Card
+                  key={`${setIndex}-${photoIndex}`}
+                  className={`absolute inset-0 overflow-hidden shadow-2xl border-2 border-white/40 transition-all duration-700 ${
+                    photoIndex === currentIndexes[setIndex]
+                      ? 'translate-x-0 opacity-100 z-10'
+                      : photoIndex === (currentIndexes[setIndex] + photos.length - 1) % photos.length
+                      ? '-translate-x-full opacity-0 z-0'
+                      : 'translate-x-full opacity-0 z-0'
+                  }`}
+                >
+                  <img
+                    src={photo}
+                    alt={`Photo ${photoIndex + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </Card>
+              ))}
+              
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 z-20">
+                <div className="flex gap-1.5 justify-center">
+                  {photos.map((_, idx) => (
+                    <div
+                      key={idx}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        idx === currentIndexes[setIndex]
+                          ? 'w-8 bg-white'
+                          : 'w-1.5 bg-white/50'
+                      }`}
+                    />
+                  ))}
                 </div>
-              </Card>
+              </div>
             </div>
           </div>
         ))}

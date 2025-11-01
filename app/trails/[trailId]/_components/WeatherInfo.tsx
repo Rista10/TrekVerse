@@ -1,78 +1,80 @@
-import React from 'react';
-import { Droplets, Eye, AlertTriangle } from 'lucide-react';
+"use client";
+
+import React,{useEffect, useState} from 'react';
+import { Eye} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface WeatherInfoProps {
-  temperature?: number;
-  condition?: string;
-  conditionIcon?: string;
-  visibility?: number;
-  precipitation?: number;
-  alert?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 const WeatherInfo: React.FC<WeatherInfoProps> = ({
-  temperature = 22,
-  condition = 'Partly cloudy',
-  conditionIcon = '//cdn.weatherapi.com/weather/64x64/day/116.png',
-  visibility = 10,
-  precipitation = 0,
-  alert
+  latitude,longitude
 }) => {
+   const [temperature, setTemperature] = useState(0);
+    const [condition, setCondition] = useState("");
+    const [humidity, setHumidity] = useState(0);
+    const [conditionIcon, setConditionIcon] = useState("");
+
+    const fetchWeatherData = async (lat?: number, lon?: number) => {
+        try {
+            const response = await fetch(
+                `https://api.weatherapi.com/v1/current.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${lat},${lon}`
+            );
+            const data = await response.json();
+            setTemperature(data.current.temp_c);
+            setCondition(data.current.condition.text);
+            setHumidity(data.current.humidity);
+            setConditionIcon(data.current.condition.icon);
+        } catch (error) {
+            console.error("Error fetching weather data:", error);
+        }
+    };
+
+    useEffect(()=>{
+        fetchWeatherData(latitude,longitude);
+    },[latitude,longitude])
+
   return (
-    <Card className="max-w-md">
+    <Card className="w-full">
       <CardContent className="p-6">
-        {/* Main Temperature Display */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <img 
-              src={conditionIcon} 
-              alt={condition}
-              className="w-16 h-16"
-            />
-            <div>
-              <div className="text-5xl font-light text-foreground">
-                {temperature}°
-              </div>
-              <div className="text-sm text-muted-foreground mt-1">
-                {condition}
-              </div>
-            </div>
+ <div className="flex flex-col items-center justify-center text-center mb-8">
+          <img
+            src={conditionIcon}
+            alt={condition}
+            className="w-20 h-20 mb-4 drop-shadow-lg"
+          />
+          <div className="text-6xl font-light text-gray-700 drop-shadow-md mb-2">
+            {temperature}°
+          </div>
+          <div className="text-base text-gray-700 font-medium">
+            {condition}
           </div>
         </div>
 
-        {/* Weather Details */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          {/* Visibility */}
-          <div className="flex items-center gap-2">
-            <Eye className="w-4 h-4 text-muted-foreground" />
-            <div>
-              <div className="text-xs text-muted-foreground">Visibility</div>
-              <div className="text-sm font-medium text-foreground">{visibility} km</div>
-            </div>
-          </div>
-
-          {/* Precipitation */}
-          <div className="flex items-center gap-2">
-            <Droplets className="w-4 h-4 text-muted-foreground" />
-            <div>
-              <div className="text-xs text-muted-foreground">Precipitation</div>
-              <div className="text-sm font-medium text-foreground">{precipitation} mm</div>
+        {/* Weather Details - Centered */}
+        <div className="flex justify-center">
+          <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
+            <svg 
+              className="w-5 h-5 text-gray-700" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" 
+              />
+            </svg>
+            <div className="text-center">
+              <div className="text-xs text-gray-700 font-medium">Humidity</div>
+              <div className="text-lg font-semibold text-gray-700">{humidity}%</div>
             </div>
           </div>
         </div>
-
-        {/* Alert */}
-        {alert && (
-          <Alert className="mt-4">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription className="ml-2">
-              <div className="text-xs font-medium mb-1">Weather Alert</div>
-              <div className="text-xs">{alert}</div>
-            </AlertDescription>
-          </Alert>
-        )}
       </CardContent>
     </Card>
   );

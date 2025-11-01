@@ -1,0 +1,113 @@
+"use client";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState } from 'react';
+import { LocationHeader } from './AboutTab';
+import { ReviewsTab } from './ReviewTab';
+import { PhotosTab } from './PhotoTab';
+import Image from 'next/image';
+
+interface TrailDetailsProps {
+    name: string;
+    description: string;
+    rating: number;
+    reviewCount: number;
+    address: string;
+}
+
+interface Photo {
+    id: string;
+    url: string;
+    caption?: string;
+}
+
+export const TrailDetails: React.FC<TrailDetailsProps> = ({
+    name,
+    description,
+    rating,
+    reviewCount,
+    address
+}) => {
+    const [activeTab, setActiveTab] = useState('about');
+    const reviews = [
+        {
+            id: '1',
+            author: 'Sarah Johnson',
+            rating: 5,
+            date: 'Oct 2024',
+            text: 'Absolutely stunning place! The architecture is breathtaking and the peaceful atmosphere is perfect for meditation. A must-visit in Kathmandu.'
+        },
+        {
+            id: '2',
+            author: 'Raj Patel',
+            rating: 4,
+            date: 'Sep 2024',
+            text: 'Beautiful temple complex with amazing views of the city. Can get crowded during festivals, but still worth the visit. Bring comfortable shoes for the stairs!'
+        }]
+
+    const photos: Photo[] = [
+        { id: '1', url: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=800&h=600&fit=crop' },
+        { id: '2', url: 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=800&h=600&fit=crop' }]
+
+    return (
+        <div className="relative min-h-screen w-[50vw] h-screen">
+            {/* Background Image */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/frames/frame_0192.png"
+                    alt="Mountain background"
+                    fill
+                    className="object-cover"
+                    priority
+                />
+                {/* Optional overlay for better text readability */}
+                <div className="absolute inset-0 bg-black/20" />
+            </div>
+
+            {/* Content */}
+            <div className="relative z-10">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent backdrop-blur-sm">
+                        <TabsTrigger
+                            value="about"
+                            className="rounded-none border-b-2 border-transparent  bg-transparent"
+                        >
+                            About
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="reviews"
+                            className="rounded-none border-b-2 border-transparent bg-transparent"
+                        >
+                            Reviews
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="photos"
+                            className="rounded-none border-b-2 border-transparent  bg-transparent"
+                        >
+                            Photos
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="about" className="mt-6  backdrop-blur-sm p-6 bg-transparent">
+                        <LocationHeader
+                            name={name}
+                            description={description}
+                        />
+                    </TabsContent>
+
+                    <TabsContent value="reviews" className="mt-6 bg-transparent backdrop-blur-sm p-6">
+                        <ReviewsTab
+                            reviews={reviews}
+                            rating={rating}
+                            reviewCount={reviewCount}
+                        />
+                    </TabsContent>
+
+                    <TabsContent value="photos" className="mt-6 bg-transparent backdrop-blur-sm p-6">
+                        <PhotosTab photos={photos} />
+                    </TabsContent>
+                </Tabs>
+            </div>
+        </div>
+    );
+};

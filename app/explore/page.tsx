@@ -6,6 +6,7 @@ import TrailCarousel from "@/components/trail/trailCarousel";
 import Image from "next/image";
 import { trailApi } from "@/lib/api";
 import { Trail } from "@/types/trail";
+
 import { trailData } from "../../data/index";
 
 export default function ExplorePage() {
