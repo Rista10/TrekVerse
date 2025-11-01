@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 
 interface FormData {
   fullName: string;
@@ -137,10 +138,19 @@ const AuthPages = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-white" >
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          <div className="p-8 pb-6" style={{ background: 'linear-gradient(135deg, #B7C8B5 0%, #C5EBC3 100%)' }}>
-            <h2 className="text-3xl font-bold text-center" style={{ color: '#54414E' }}>
+        <div className="fixed inset-0 z-0">
+                <Image
+                  src="/frames/frame_0192.png"
+                  alt="Mountain background"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+      <div className="w-full max-w-md ">
+        <div className="bg-background/50 backdrop-blur-md border-muted  rounded-2xl shadow-2xl overflow-hidden">
+          <div className="p-8 pb-6" >
+            <h2 className="text-3xl font-bold text-center" style={{ color: '54414E' }}>
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
             <p className="text-center mt-2" style={{ color: '#875C74' }}>
