@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Button from "./Button";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -41,7 +42,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="fixed top-0 left-0 w-full h-screen flex items-center justify-center pointer-events-none z-10">
+    <section className="fixed top-0 left-0 w-full h-[calc(100vh-4rem)] flex items-center justify-center pointer-events-none z-10">
       <div
         ref={textRef}
         // Match GSAP's initial animation state on the server to avoid
@@ -62,9 +63,15 @@ export default function HeroSection() {
           <Button variant="primary" onClick={() => handleButtonClick()}>Explore Treks →</Button>
           {/* <Button variant="secondary">View Gallery →</Button> */}
         </div>
-
-
       </div>
+      <Image
+        src="/flag1.png"
+        alt="Nepal"
+        height={300}
+        width={150}
+        className="fixed bottom-0 -right-2.5 z-20"
+        priority
+      />
     </section>
   );
 }

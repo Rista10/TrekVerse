@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import type { LatLngExpression } from "leaflet";
+import L from 'leaflet';
+
 
 // Dynamically import MapContainer to disable SSR
 const MapContainer = dynamic(
@@ -27,9 +29,15 @@ interface TrekMapProps {
   longitude?: number;
 }
 
+
 export default function TrekMap({ latitude, longitude }: TrekMapProps) {
   const position: LatLngExpression = [latitude || 51.505, longitude || -0.09];
+const customIcon = L.icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+});
 
+  
   return (
     <div className="w-full h-[80vh] rounded-2xl overflow-hidden shadow-lg">
       <MapContainer center={position} zoom={13} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
@@ -37,7 +45,7 @@ export default function TrekMap({ latitude, longitude }: TrekMapProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
-        <Marker position={position}>
+        <Marker position={position} icon={customIcon}>
           <Popup>
             Location: {latitude}, {longitude}
           </Popup>

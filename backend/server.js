@@ -2,7 +2,7 @@ import express from 'express';
 import connectDB from './db/config.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import authRoutes from './db/Routes/authRoutes.js'; 
+import authRoutes from './db/Routes/authRoutes.js';
 import trailRoutes from './db/Routes/trailRoutes.js';
 import commentRoutes from './db/Routes/commentRoutes.js';
 
@@ -13,18 +13,19 @@ const allowedOrigin = 'http://localhost:3000';
 
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: [allowedOrigin],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
   })
 );
-app.use(express.json()); 
+app.use(express.json());
 app.use(cookieParser());
 
 
 connectDB();
 
 
-app.use('/api/auth', authRoutes); 
+app.use('/api/auth', authRoutes);
 app.use("/api/trails", trailRoutes);
 app.use('/api/comments', commentRoutes);
 
