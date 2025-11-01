@@ -277,8 +277,8 @@ export default function ForumPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-background/50 backdrop-blur-md border-muted  rounded-xl p-6 border-2 border-gray-200 shadow-md">
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="bg-background/50 backdrop-blur-md border-muted  rounded-xl p-2 border-2 border-gray-200 shadow-md">
             <div className="flex items-center gap-4 ">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                 <MessageSquare className="text-blue-600" size={24} />
@@ -290,21 +290,11 @@ export default function ForumPage() {
             </div>
           </div>
 
-          <div className="bg-background/50 backdrop-blur-md border-muted  rounded-xl p-6 border-2 border-gray-200 shadow-md">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <Users className="text-green-600" size={24} />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">1.2k</p>
-                <p className="text-sm text-gray-600">Active Members</p>
-              </div>
-            </div>
-          </div>
-
           <Button 
             onClick={() => setIsModalOpen(true)}
-            className="h-full bg-background/50 backdrop-blur-md border-muted "
+            type="button"
+            variant="primary"
+            className=""
           >
             <Plus size={24} />
             Create New Post
@@ -345,10 +335,6 @@ export default function ForumPage() {
               <p className="text-gray-600 mb-6">
                 Be the first to start a discussion!
               </p>
-              <Button onClick={() => setIsModalOpen(true)} variant="primary">
-                <Plus size={20} />
-                Create Post
-              </Button>
             </div>
           )}
         </div>
