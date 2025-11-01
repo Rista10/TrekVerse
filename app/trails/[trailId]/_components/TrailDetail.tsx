@@ -7,12 +7,21 @@ import { ReviewsTab } from './ReviewTab';
 import { PhotosTab } from './PhotoTab';
 import Image from 'next/image';
 
+interface Checkpoint {
+  name: string;
+  latitude: number;
+  longitude: number;
+  description: string;
+}
+
 interface TrailDetailsProps {
     name: string;
     description: string;
+    duration?: string;
+    difficulty?: string;
+    checkpoints?: Checkpoint[];
     rating: number;
     reviewCount: number;
-    address: string;
 }
 
 interface Photo {
@@ -24,9 +33,11 @@ interface Photo {
 export const TrailDetails: React.FC<TrailDetailsProps> = ({
     name,
     description,
+    duration,
+    difficulty,
+    checkpoints = [],
     rating,
     reviewCount,
-    address
 }) => {
     const [activeTab, setActiveTab] = useState('about');
     const reviews = [
@@ -92,6 +103,10 @@ export const TrailDetails: React.FC<TrailDetailsProps> = ({
                         <LocationHeader
                             name={name}
                             description={description}
+                            duration={duration}
+                            difficulty={difficulty}
+                            checkpoints={checkpoints}
+
                         />
                     </TabsContent>
 

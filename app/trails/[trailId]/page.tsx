@@ -15,23 +15,27 @@ export default async function TrekTrails({ params }: { params: Promise<{ trailId
     }
 
     return (
-        <div className='flex'>
+<div className="flex">
+  {/* Left scrolling content */}
+  <div className="flex-1 pr-[50vw]">
+    <TrailDetails
+      name={trail.name}
+      description={trail.description}
+      duration={trail.duration}
+      difficulty={trail.difficulty}
+      checkpoints={trail.checkpoints}
+      rating={4.5}
+      reviewCount={200}
+    />
+  </div>
 
+  {/* Right fixed panel */}
+  <div className="w-[50vw] h-screen rounded-2xl overflow-hidden shadow-lg fixed right-0 top-0">
+    <WeatherInfo latitude={trail.latitude} longitude={trail.longitude} />
+    <TrekMap latitude={trail.latitude} longitude={trail.longitude} checkpoints={trail.checkpoints} />
+  </div>
+</div>
 
-            <TrailDetails
-                name={trail.name}
-                description= "Perfect for beginners, this trail offers gentle slopes and scenic views."
-                rating={4.5}
-                reviewCount={128}
-                address="123 Mountain Rd, Hiker's Paradise"
-            />
-            <div className='w-[50vw] h-screen rounded-2xl overflow-hidden shadow-lg'>
-                <WeatherInfo
-                latitude={trail.latitude}
-                longitude={trail.longitude}
-            />
-                <TrekMap latitude={trail.latitude} longitude={trail.longitude} />
-            </div>
-        </div>
     );
 }
+        
