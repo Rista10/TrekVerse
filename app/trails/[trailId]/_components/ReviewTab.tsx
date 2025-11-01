@@ -99,6 +99,7 @@ export const ReviewsTab: React.FC<ReviewsTabProps> = ({
       }
 
       if (response.ok) {
+
         setMessage({ type: 'success', text: 'Review posted successfully!' });
         setIsModalOpen(false);
         await fetchComments();
@@ -234,8 +235,8 @@ export const ReviewsTab: React.FC<ReviewsTabProps> = ({
 
   return (
     <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-6">
+      <CardContent className="">
+        <div className="flex items-center justify-between ">
           <h2 className="text-xl font-semibold">Reviews</h2>
           <div className="flex items-center gap-2">
             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
