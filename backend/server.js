@@ -7,18 +7,18 @@ import trailRoutes from './db/Routes/trailRoutes.js';
 import commentRoutes from './db/Routes/commentRoutes.js';
 
 const app = express();
-const port = 5000;
+const port = 5050;
 const allowedOrigin = 'http://localhost:3000';
 
 
 app.use(
   cors({
-    origin: [allowedOrigin],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: allowedOrigin,
+    credentials: true, // Allow cookies to be sent
   })
 );
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 

@@ -109,3 +109,33 @@ export const refreshAccessToken = (req, res) => {
     return res.status(403).json({ message: 'Invalid or expired refresh token' });
   }
 };
+
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      user: {
+        id: user._id.toString(), // Add user ID
+        fullName: user.fullName,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('Get current user error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const logoutUser = async (req, res) => {
+  res
+    .clearCookie('accessToken')
+    .clearCookie('refreshToken')
+    .status(200)
+    .json({ message: 'Logout successful' });
+};
