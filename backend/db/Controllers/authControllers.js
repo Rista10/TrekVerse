@@ -139,3 +139,32 @@ export const logoutUser = async (req, res) => {
     .status(200)
     .json({ message: 'Logout successful' });
 };
+
+export const getUserByEmail = async (req, res) => {
+  const { email } = req.params; // assuming email is passed as a route param
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const user = await User.findOne({ email }).select("-password"); // remove password from response
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      user: {
+        id: user._id.toString(),
+        fullName: user.fullName,
+        email: user.email,
+        phoneNo: user.phoneNo
+      }
+    });
+
+  } catch (error) {
+    console.error("Get user by email error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
