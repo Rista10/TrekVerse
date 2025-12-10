@@ -60,10 +60,6 @@ export const getComments = async (req, res) => {
 // Create a new forum comment
 export const createComment = async (req, res) => {
   try {
-    console.log('Create comment request body:', req.body);
-    console.log('Create comment request files:', req.files);
-    console.log('User from request:', req.user);
-    
     const userId = req.user?.id;
     
     if (!userId) {
@@ -71,8 +67,6 @@ export const createComment = async (req, res) => {
     }
 
     const { content, category, trailId } = req.body;
-
-    console.log('Content:', content, 'Category:', category, 'TrailId:', trailId);
 
     if (!content || !content.trim()) {
       return res.status(400).json({ message: "Content is required" });
@@ -97,9 +91,8 @@ export const createComment = async (req, res) => {
         if (trail) {
           trailObjectId = trail._id;
         } else {
-          // Trail not found - log warning but don't auto-create to avoid pollution
-          console.log(`Trail "${trailId}" not found in database. Comment will be created without trail reference.`);
-          // Comments can exist without a trail reference
+          // Trail not found - comment will be created without trail reference
+          // trailId is optional in schema, so this is acceptable
           trailObjectId = null;
         }
       }

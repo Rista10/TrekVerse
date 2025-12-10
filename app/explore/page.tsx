@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import SearchBar from "./_components/SearchBar";
 import TrailCarousel from "@/components/trail/trailCarousel";
 import Image from "next/image";
@@ -39,9 +39,9 @@ export default function ExplorePage() {
     fetchTrails();
   }, []);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
-  };
+  }, []);
 
   // Filter trails based on search query
   const filteredTrails = trails.filter((trail) =>
