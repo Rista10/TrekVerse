@@ -41,4 +41,7 @@ const trailSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Add index for name lookups (used frequently in comment controller)
+trailSchema.index({ name: 1 });
+
 export default mongoose.model('Trail', trailSchema);

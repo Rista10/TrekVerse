@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 
 const PhotoCarousel = () => {
-  // Trek path images with labels
-  const photoSets = [
+  // Trek path images with labels - memoized to prevent recreation
+  const photoSets = useMemo(() => [
     {
       label: "Stop 1",
       photos: [
@@ -49,7 +49,7 @@ const PhotoCarousel = () => {
         'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
       ]
     },
-  ];
+  ], []); // Empty dependency array since photo sets are static
 
   const [currentIndexes, setCurrentIndexes] = useState([0, 0, 0, 0, 0]);
 
@@ -65,7 +65,7 @@ const PhotoCarousel = () => {
     });
 
     return () => intervals.forEach(clearInterval);
-  }, []);
+  }, [photoSets]);
 
   return (
     <div className="min-h-screen bg-white p-8 flex items-center justify-center">

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, MapPin, Clock, TrendingUp } from "lucide-react";
 
 interface TrailCarouselProps {
@@ -17,6 +18,7 @@ interface TrailCarouselProps {
 }
 
 const TrailCarousel = ({ trail }: TrailCarouselProps) => {
+  const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const images = trail.images || [];
 
@@ -139,8 +141,9 @@ const TrailCarousel = ({ trail }: TrailCarouselProps) => {
           {trail.description}
         </p>
 
-        <button className="mt-4 w-full bg-background/50 backdrop-blur-md border-muted hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
-        onClick={() => window.location.href = `/trails/${trail.name}`}
+        <button 
+          className="mt-4 w-full bg-background/50 backdrop-blur-md border-muted hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
+          onClick={() => router.push(`/trails/${encodeURIComponent(trail.name)}`)}
         >
           View Details
         </button>

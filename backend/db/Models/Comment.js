@@ -55,4 +55,9 @@ const commentSchema = new mongoose.Schema(
   { timestamps: true } // adds createdAt and updatedAt automatically
 );
 
+// Add indexes for better query performance
+commentSchema.index({ trailId: 1, createdAt: -1 }); // For getCommentsByTrail queries
+commentSchema.index({ category: 1, createdAt: -1 }); // For category filtering with sort
+commentSchema.index({ createdAt: -1 }); // For general sorted queries
+
 export default mongoose.model("Comment", commentSchema);

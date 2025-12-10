@@ -89,9 +89,6 @@ export default function TrekMap({ latitude, longitude, checkpoints }: TrekMapPro
         ))
         : [];
 
-    console.log("Checkpoints received:", checkpoints);
-    console.log("Number of markers:", markers.length);
-
     // Build polyline coordinates connecting checkpoints in order
     const polylineCoordinates: LatLngExpression[] = checkpoints && checkpoints.length > 0
         ? checkpoints.map(cp => [cp.latitude, cp.longitude] as LatLngExpression)
