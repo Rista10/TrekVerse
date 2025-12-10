@@ -29,15 +29,22 @@ export default function ForumPage() {
     try {
       setLoading(true);
       const url = selectedCategory === 'all' 
-        ? 'http://localhost:5050/api/comments'
-        : `http://localhost:5050/api/comments?category=${selectedCategory}`;
+        ? 'http://localhost:5050/api/comments?limit=50'
+        : `http://localhost:5050/api/comments?category=${selectedCategory}&limit=50`;
       
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setComments(Array.isArray(data) ? data : []);
+      // Handle both old array format and new paginated format for backward compatibility
+      if (Array.isArray(data)) {
+        setComments(data);
+      } else if (data.comments && Array.isArray(data.comments)) {
+        setComments(data.comments);
+      } else {
+        setComments([]);
+      }
     } catch (error) {
       console.error('Error fetching comments:', error);
       setComments([]);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -19,10 +19,11 @@ export default function SearchBar({ onSearch, placeholder = "Search trails...", 
     const wrapperRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
-    useEffect(() => {
-        if (query.trim()) {
+    // Debounced search to reduce filter operations
+    const debouncedSearch = useCallback((searchQuery: string) => {
+        if (searchQuery.trim()) {
             const filtered = trails.filter((trail) =>
-                trail.name.toLowerCase().includes(query.toLowerCase())
+                trail.name.toLowerCase().includes(searchQuery.toLowerCase())
             );
             setFilteredTrails(filtered);
             setShowSuggestions(true);
@@ -30,7 +31,16 @@ export default function SearchBar({ onSearch, placeholder = "Search trails...", 
             setFilteredTrails([]);
             setShowSuggestions(false);
         }
-    }, [query, trails]);
+    }, [trails]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            debouncedSearch(query);
+            onSearch(query); // Update parent after debounce
+        }, 300); // 300ms debounce delay
+
+        return () => clearTimeout(timer);
+    }, [query, debouncedSearch, onSearch]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -44,18 +54,21 @@ export default function SearchBar({ onSearch, placeholder = "Search trails...", 
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        // Immediately trigger search on submit (skip debounce)
+        debouncedSearch(query);
         onSearch(query);
         setShowSuggestions(false);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setQuery(e.target.value);
-        onSearch(e.target.value);
+        const value = e.target.value;
+        setQuery(value);
+        // Don't call onSearch immediately - let the debounced effect handle it
+        // But update the parent with the raw value for immediate UI feedback if needed
     };
 
     const handleTrailClick = (trailName: string) => {
         setQuery(trailName);
-        onSearch(trailName);
         setShowSuggestions(false);
         router.push(`/trails/${encodeURIComponent(trailName)}`);
     };

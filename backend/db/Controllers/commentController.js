@@ -16,22 +16,41 @@ const uploadToCloudinary = (fileBuffer) => {
   });
 };
 
-// Get all comments (forum comments) with optional category filter
+// Get all comments (forum comments) with optional category filter and pagination
 export const getComments = async (req, res) => {
   try {
-    const { category } = req.query;
+    const { category, page = 1, limit = 20 } = req.query;
     
     let query = {};
     if (category && category !== 'all') {
       query.category = category;
     }
 
+    // Convert to numbers and validate
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit))); // Cap at 100 items per page
+    const skip = (pageNum - 1) * limitNum;
+
+    // Get total count for pagination info
+    const total = await Comment.countDocuments(query);
+
     const comments = await Comment.find(query)
       .populate("userId", "fullName email")
       .populate("replies.userId", "fullName email")
-      .sort({ createdAt: -1 }); // newest first
+      .sort({ createdAt: -1 }) // newest first
+      .skip(skip)
+      .limit(limitNum)
+      .lean(); // Use lean() for better performance
 
-    res.status(200).json(comments);
+    res.status(200).json({
+      comments,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        pages: Math.ceil(total / limitNum)
+      }
+    });
   } catch (error) {
     console.error("Error fetching comments:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -41,10 +60,6 @@ export const getComments = async (req, res) => {
 // Create a new forum comment
 export const createComment = async (req, res) => {
   try {
-    console.log('Create comment request body:', req.body);
-    console.log('Create comment request files:', req.files);
-    console.log('User from request:', req.user);
-    
     const userId = req.user?.id;
     
     if (!userId) {
@@ -52,8 +67,6 @@ export const createComment = async (req, res) => {
     }
 
     const { content, category, trailId } = req.body;
-
-    console.log('Content:', content, 'Category:', category, 'TrailId:', trailId);
 
     if (!content || !content.trim()) {
       return res.status(400).json({ message: "Content is required" });
@@ -73,28 +86,14 @@ export const createComment = async (req, res) => {
       if (mongoose.Types.ObjectId.isValid(trailId)) {
         trailObjectId = trailId;
       } else {
-        // It's likely a trail name, find the Trail by name
-        const trail = await Trail.findOne({ name: trailId });
+        // It's likely a trail name, find the Trail by name using lean() for performance
+        const trail = await Trail.findOne({ name: trailId }).select('_id').lean();
         if (trail) {
           trailObjectId = trail._id;
         } else {
-          // Trail not found in DB, store as string name (we'll need to update schema)
-          // For now, let's create or find the trail
-          // Actually, since trailId in Comment schema expects ObjectId, we should create the trail if it doesn't exist
-          // OR we need to update the schema to accept string. Let's try to find/create the trail.
-          console.log(`Trail "${trailId}" not found in database. Creating or using name as identifier.`);
-          // For now, we'll skip trailId if trail doesn't exist, or store the trail name
-          // But since schema expects ObjectId, we need to either:
-          // 1. Create the trail if it doesn't exist
-          // 2. Update schema to accept string
-          // Let's go with option 1 - create trail if it doesn't exist
-          const newTrail = await Trail.create({
-            name: trailId,
-            location: 'Unknown',
-            description: 'Trail created automatically from comment',
-            difficulty: 'Moderate'
-          });
-          trailObjectId = newTrail._id;
+          // Trail not found - comment will be created without trail reference
+          // trailId is optional in schema, so this is acceptable
+          trailObjectId = null;
         }
       }
     }
@@ -249,8 +248,8 @@ export const getCommentsByTrail = async (req, res) => {
     // Check if trailId is a valid MongoDB ObjectId
     let trailObjectId = trailId;
     if (!mongoose.Types.ObjectId.isValid(trailId)) {
-      // It's likely a trail name, find the Trail by name
-      const trail = await Trail.findOne({ name: trailId });
+      // It's likely a trail name, find the Trail by name using lean() for better performance
+      const trail = await Trail.findOne({ name: trailId }).select('_id').lean();
       if (trail) {
         trailObjectId = trail._id;
       } else {
@@ -259,11 +258,12 @@ export const getCommentsByTrail = async (req, res) => {
       }
     }
 
-    // Query comments using the trail ObjectId
+    // Query comments using the trail ObjectId with optimized query
     const comments = await Comment.find({ trailId: trailObjectId })
       .populate("userId", "fullName email")
       .populate("replies.userId", "fullName email")
-      .sort({ createdAt: -1 }); // newest first
+      .sort({ createdAt: -1 }) // newest first
+      .lean(); // Use lean() for better performance when we don't need Mongoose documents
 
     res.status(200).json(comments);
   } catch (error) {

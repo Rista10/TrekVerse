@@ -9,7 +9,7 @@ export const trailApi = {
       headers: {
         "Content-Type": "application/json",
       },
-      cache: "no-store", // Disable caching for fresh data
+      next: { revalidate: 300 }, // Cache for 5 minutes - trails don't change frequently
     });
 
     if (!response.ok) {
@@ -25,6 +25,7 @@ export const trailApi = {
       headers: {
         "Content-Type": "application/json",
       },
+      next: { revalidate: 600 }, // Cache for 10 minutes - individual trail data is stable
     });
 
     if (!response.ok) {
